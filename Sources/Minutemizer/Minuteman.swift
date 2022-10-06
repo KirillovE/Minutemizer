@@ -11,7 +11,7 @@ import Foundation
 public struct Minuteman: Identifiable {
 
     /// Unique identifier of the minuteman
-    public let id = UUID()
+    public var id = UUID()
 
     /// First name of the minuteman
     public let firstName: String
@@ -23,9 +23,18 @@ public struct Minuteman: Identifiable {
     public let middleName: String?
 }
 
-/// Will be used to keep the minuteman as a key in a dictionary to store statistics 
+/// Will be used to keep the minuteman as a key in a dictionary to store statistics
 extension Minuteman: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }
+
+/// A custom implementation to use only the `id` for the calculations
+extension Minuteman: Equatable {
+    public static func ==(lhs: Minuteman, rhs: Minuteman) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+extension Minuteman: Codable { }
