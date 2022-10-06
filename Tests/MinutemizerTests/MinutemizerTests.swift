@@ -156,6 +156,20 @@ final class MinutemizerTests: XCTestCase {
             .store(in: &subscriptions)
         XCTAssertEqual(result.count, count - 2)
     }
+
+    func test_deleteAll() throws {
+        try addTestValue(count: 3)
+        minutemizer.deleteAll()
+
+        var storedList = [Minuteman]()
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                storedList = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertTrue(storedList.isEmpty)    }
 }
 
 @available(tvOS 13.0, *)

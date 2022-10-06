@@ -100,7 +100,8 @@ public extension Minutemizer {
 
     /// Completely delete all minutemen from the list
     func deleteAll() {
-
+        storage.removeObject(forKey: Self.minutemenListKey)
+        storage.removeObject(forKey: Self.lastMinutemanKey)
     }
 }
 
