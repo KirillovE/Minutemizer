@@ -113,6 +113,34 @@ final class MinutemizerTests: XCTestCase {
             .store(in: &subscriptions)
         XCTAssertTrue(result.isEmpty)
     }
+
+    func test_deleteInexisting() throws {
+        do {
+            try minutemizer.delete(harryPotter)
+        } catch {
+            let customError = error as! MinutemizerError
+            XCTAssertEqual(customError, MinutemizerError.emptyList)
+        }
+    }
+
+    func test_deleteExisting() throws {
+        let testMinuteman = Minuteman(firstName: "Harry", secondName: "Potter", middleName: nil)
+        let testData = try JSONEncoder().encode([testMinuteman])
+        minutemizer.storage.set(
+            testData,
+            forKey: Minutemizer.minutemenListKey
+        )
+        try minutemizer.delete(testMinuteman)
+        var result = [Minuteman]()
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                result = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertTrue(result.isEmpty)
+    }
 }
 
 @available(tvOS 13.0, *)

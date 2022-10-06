@@ -68,8 +68,16 @@ public extension Minutemizer {
 
     /// Delete a minuteman from the list
     /// - Parameter minuteman: Minuteman to be deleted
-    func delete(_ minuteman: Minuteman) {
-
+    func delete(_ minuteman: Minuteman) throws {
+        let storedList = try storage.minutemenList.flatMap { data in
+            try Self.decoder.decode([Minuteman].self, from: data)
+        }
+        guard var storedList, !storedList.isEmpty else {
+            throw MinutemizerError.emptyList
+        }
+        storedList.removeAll { $0 == minuteman }
+        let updatedData = try Self.encoder.encode(storedList)
+        storage.set(updatedData, forKey: Self.minutemenListKey)
     }
 
     /// Delete a list of minutemen from the current list
