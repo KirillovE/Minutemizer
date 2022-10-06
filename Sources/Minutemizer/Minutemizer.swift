@@ -32,11 +32,13 @@ public struct Minutemizer {
         .decode(type: Minuteman.self, decoder: Self.decoder)
         .eraseToAnyPublisher()
 
+    public init() { }
+
     /// Picks a new minuteman from the list
     ///
     /// Also updates the ``lastPicked`` minuteman
     /// - Returns: A chosen minuteman or `nil` if the list is empty
-    public mutating func pickOne() throws -> Minuteman? {
+    public func pickOne() throws -> Minuteman? {
         let picked = try storage.minutemenList.flatMap { data in
             let list = try Self.decoder.decode([Minuteman].self, from: data)
             return list.randomElement()
@@ -100,7 +102,8 @@ public extension Minutemizer {
 
     /// Completely delete all minutemen from the list
     func deleteAll() {
-
+        storage.removeObject(forKey: Self.minutemenListKey)
+        storage.removeObject(forKey: Self.lastMinutemanKey)
     }
 }
 
