@@ -84,6 +84,35 @@ final class MinutemizerTests: XCTestCase {
         XCTAssertFalse(result.isEmpty)
         XCTAssertEqual(result.count, 1)
     }
+
+    func test_addMany() throws {
+        try minutemizer.add([harryPotter, harryPotter])
+        var result = [Minuteman]()
+
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                result = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertFalse(result.isEmpty)
+        XCTAssertEqual(result.count, 2)
+    }
+
+    func test_addZero() throws {
+        try minutemizer.add([])
+        var result = [Minuteman]()
+
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                result = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertTrue(result.isEmpty)
+    }
 }
 
 @available(tvOS 13.0, *)

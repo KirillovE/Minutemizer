@@ -57,23 +57,13 @@ public extension Minutemizer {
     /// Add a new minuteman to the list
     /// - Parameter minuteman: Minuteman to be added
     func add(_ minuteman: Minuteman) throws {
-        let storedList = try storage.minutemenList.flatMap { data in
-            try Self.decoder.decode([Minuteman].self, from: data)
-        }
-        let updatedList: [Minuteman]
-        if let storedList {
-            updatedList = storedList + [minuteman]
-        } else {
-            updatedList = [minuteman]
-        }
-        let updatedData = try Self.encoder.encode(updatedList)
-        storage.set(updatedData, forKey: Self.minutemenListKey)
+        try updateListWith([minuteman])
     }
 
     /// Add a list of minutemen to the current list
     /// - Parameter minutemen: List of minutemen to be added
-    func add(_ minutemen: [Minuteman]) {
-
+    func add(_ minutemen: [Minuteman]) throws {
+        try updateListWith(minutemen)
     }
 
     /// Delete a minuteman from the list
@@ -94,6 +84,27 @@ public extension Minutemizer {
     }
 }
 
+@available(watchOS 6.0, *)
+@available(tvOS 13.0, *)
+@available(macOS 10.15, *)
+@available(iOS 13.0, *)
+private extension Minutemizer {
+    func updateListWith(_ minutemen: [Minuteman]) throws {
+        let storedList = try storage.minutemenList.flatMap { data in
+            try Self.decoder.decode([Minuteman].self, from: data)
+        }
+        let updatedList: [Minuteman]
+        if let storedList {
+            updatedList = storedList + minutemen
+        } else {
+            updatedList = minutemen
+        }
+        let updatedData = try Self.encoder.encode(updatedList)
+        storage.set(updatedData, forKey: Self.minutemenListKey)
+    }
+}
+
+// MARK: - Other
 extension UserDefaults {
     @objc dynamic var minutemenList: Data? {
         data(forKey: "minutemen list")
