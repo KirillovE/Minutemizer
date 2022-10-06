@@ -141,6 +141,21 @@ final class MinutemizerTests: XCTestCase {
             .store(in: &subscriptions)
         XCTAssertTrue(result.isEmpty)
     }
+
+    func test_deleteExisting_many() throws {
+        let count = 3
+        let addedMinutemen = try addTestValue(count: count)
+        try minutemizer.delete(addedMinutemen.dropLast())
+        var result = [Minuteman]()
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                result = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertEqual(result.count, count - 2)
+    }
 }
 
 @available(tvOS 13.0, *)
@@ -154,12 +169,14 @@ extension MinutemizerTests {
         )
     }
 
-    func addTestValue(count: Int = 1) throws {
+    @discardableResult
+    func addTestValue(count: Int = 1) throws -> [Minuteman] {
         let testMinutemen = (0 ..< count).map { _ in harryPotter }
         let testData = try JSONEncoder().encode(testMinutemen)
         minutemizer.storage.set(
             testData,
             forKey: Minutemizer.minutemenListKey
         )
+        return testMinutemen
     }
 }
