@@ -41,7 +41,8 @@ public struct Minutemizer {
             let list = try Self.decoder.decode([Minuteman].self, from: data)
             return list.randomElement()
         }
-        storage.set(picked, forKey: Self.lastMinutemanKey)
+        let pickedData = try Self.encoder.encode(picked)
+        storage.set(pickedData, forKey: Self.lastMinutemanKey)
         return picked
     }
 }

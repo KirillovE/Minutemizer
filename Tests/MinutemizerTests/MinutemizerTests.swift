@@ -58,6 +58,17 @@ final class MinutemizerTests: XCTestCase {
             .store(in: &subscriptions)
         XCTAssertNil(result)
     }
+
+    func test_pickOne_nil() throws {
+        let stored = try minutemizer.pickOne()
+        XCTAssertNil(stored)
+    }
+
+    func test_pickOne_notNil() throws {
+        try addTestValue()
+        let stored = try minutemizer.pickOne()
+        XCTAssertNotNil(stored)
+    }
 }
 
 @available(tvOS 13.0, *)
