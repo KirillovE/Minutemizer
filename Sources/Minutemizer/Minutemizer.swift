@@ -56,8 +56,18 @@ public extension Minutemizer {
 
     /// Add a new minuteman to the list
     /// - Parameter minuteman: Minuteman to be added
-    mutating func add(_ minuteman: Minuteman) throws {
-
+    func add(_ minuteman: Minuteman) throws {
+        let storedList = try storage.minutemenList.flatMap { data in
+            try Self.decoder.decode([Minuteman].self, from: data)
+        }
+        let updatedList: [Minuteman]
+        if let storedList {
+            updatedList = storedList + [minuteman]
+        } else {
+            updatedList = [minuteman]
+        }
+        let updatedData = try Self.encoder.encode(updatedList)
+        storage.set(updatedData, forKey: Self.minutemenListKey)
     }
 
     /// Add a list of minutemen to the current list

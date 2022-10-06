@@ -69,19 +69,36 @@ final class MinutemizerTests: XCTestCase {
         let stored = try minutemizer.pickOne()
         XCTAssertNotNil(stored)
     }
+
+    func test_add() throws {
+        try minutemizer.add(harryPotter)
+        var result = [Minuteman]()
+
+        minutemizer.currentList
+            .sink { completion in
+                XCTFail(String(describing: completion))
+            } receiveValue: { list in
+                result = list
+            }
+            .store(in: &subscriptions)
+        XCTAssertFalse(result.isEmpty)
+        XCTAssertEqual(result.count, 1)
+    }
 }
 
 @available(tvOS 13.0, *)
 @available(iOS 13.0, *)
 extension MinutemizerTests {
+    var harryPotter: Minuteman {
+        .init(
+            firstName: "Harry",
+            secondName: "Potter",
+            middleName: "James"
+        )
+    }
+
     func addTestValue(count: Int = 1) throws {
-        let testMinutemen = (0 ..< count).map { _ in
-            Minuteman(
-                firstName: "Harry",
-                secondName: "Potter",
-                middleName: "James"
-            )
-        }
+        let testMinutemen = (0 ..< count).map { _ in harryPotter }
         let testData = try JSONEncoder().encode(testMinutemen)
         minutemizer.storage.set(
             testData,
