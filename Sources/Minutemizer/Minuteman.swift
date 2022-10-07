@@ -21,6 +21,12 @@ public struct Minuteman: Identifiable {
 
     /// Middle name of the minuteman, if one exists
     public let middleName: String?
+
+    public init(firstName: String, secondName: String, middleName: String? = nil) {
+        self.firstName = firstName
+        self.secondName = secondName
+        self.middleName = middleName
+    }
 }
 
 /// Will be used to keep the minuteman as a key in a dictionary to store statistics
